@@ -43,10 +43,13 @@ def display_main_section(crypto_name):
 
         # Display bar chart of cryptocurrency prices
         st.subheader("Price Chart")
-        history = crypto_data.get("historyPrices")
+        history = crypto_data.get("history")
         if history:
-            dates = [item["date"] for item in history]
-            prices = [item["price"] for item in history]
+            dates = []
+            prices = []
+            for item in history:
+                dates.append(item["timestamp"])
+                prices.append(item["price"])
             fig, ax = plt.subplots()
             ax.bar(dates, prices)
             ax.set_xlabel("Date")
