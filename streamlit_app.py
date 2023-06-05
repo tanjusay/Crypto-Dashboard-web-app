@@ -28,7 +28,7 @@ def get_crypto_data(crypto_name):
 def get_crypto_icon(crypto):
     crypto_icon_url = crypto["iconUrl"]
     response = requests.get(crypto_icon_url)
-    if response.status_code == 200:
+    if response.status_code == 200 and response.headers["content-type"].startswith("image"):
         image = Image.open(BytesIO(response.content))
         return image
     return None
