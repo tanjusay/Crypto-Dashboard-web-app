@@ -1,3 +1,4 @@
+load_dotenv
 requests
 Pillow
 matplotlib
