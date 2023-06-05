@@ -1,9 +1,7 @@
 import os
 import requests
-from PIL import Image
 import streamlit as st
 import matplotlib.pyplot as plt
-from io import BytesIO
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -25,15 +23,6 @@ def get_crypto_data(crypto_name):
     return None
 
 
-def get_crypto_icon(crypto):
-    crypto_icon_url = crypto["iconUrl"]
-    response = requests.get(crypto_icon_url)
-    if response.status_code == 200 and response.headers["content-type"].startswith("image"):
-        image = Image.open(BytesIO(response.content))
-        return image
-    return None
-
-
 def display_sidebar():
     crypto_names = ["bitcoin", "ethereum", "litecoin"]  # Add more cryptocurrency names as needed
 
@@ -48,11 +37,9 @@ def display_main_section(crypto_name):
     crypto_data = get_crypto_data(crypto_name)
 
     if crypto_data:
-        # Display cryptocurrency name and image
+        # Display cryptocurrency name and image URL
         st.title(crypto_data["name"])
-        crypto_icon = get_crypto_icon(crypto_data)
-        if crypto_icon:
-            st.image(crypto_icon, caption=crypto_data["name"], use_column_width=True)
+        st.image(crypto_data["iconUrl"], caption=crypto_data["name"], use_column_width=True)
 
         # Display bar chart of cryptocurrency prices
         st.subheader("Price Chart")
