@@ -39,7 +39,7 @@ def display_main_section(crypto_name):
     if crypto_data:
         # Display cryptocurrency name and image URL
         st.title(crypto_data["name"])
-        st.image(crypto_data["iconUrl"], caption=crypto_data["name"], use_column_width=True)
+        st.image(crypto_data["iconUrl"], caption=crypto_data["name"], use_column_width=False)
 
         # Display bar chart of cryptocurrency prices
         st.subheader("Price Chart")
@@ -57,6 +57,7 @@ def display_main_section(crypto_name):
             ax.set_title(f"{crypto_data['name']} Price Chart")
             plt.xticks(rotation=45)
             st.pyplot(fig)
+
 
 
 def main():
