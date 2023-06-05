@@ -1,9 +1,9 @@
 import os
 import requests
 from PIL import Image
-from io import BytesIO
 import streamlit as st
 import matplotlib.pyplot as plt
+from io import BytesIO
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -23,20 +23,14 @@ def get_crypto_data(crypto_name):
             return data["data"]["coins"][0]
     return None
 
-# Function to retrieve cryptocurrency image URL from CoinRanking API
-def get_crypto_icon_url(crypto):
-    return crypto["iconUrl"]
-
-# Function to display cryptocurrency icon
-def display_crypto_icon(crypto_name):
-    crypto_data = get_crypto_data(crypto_name)
-    icon_url = get_crypto_icon_url(crypto_data)
+def get_crypto_icon(crypto):
+    icon_url = crypto["iconUrl"]
     response = requests.get(icon_url)
     if response.status_code == 200:
-        image = Image.open(BytesIO(response.content))
-        st.image(image, caption=crypto_name.capitalize(), use_column_width=True)
+        icon = Image.open(BytesIO(response.content))
+        return icon
+    return None
 
-# Function to display sidebar with cryptocurrency names
 def display_sidebar():
     crypto_names = ["bitcoin", "ethereum", "litecoin"]  # Add more cryptocurrency names as needed
 
@@ -49,14 +43,20 @@ def display_sidebar():
 def display_main_section(crypto_name):
     crypto_data = get_crypto_data(crypto_name)
 
-    # Display cryptocurrency name and icon
+    # Display cryptocurrency name and image
     st.title(crypto_name.capitalize())
-    display_crypto_icon(crypto_name)
+    crypto_icon = get_crypto_icon(crypto_data)
+    if crypto_icon:
+        st.image(crypto_icon, caption=crypto_name.capitalize(), use_column_width=True)
 
     # Display bar chart of cryptocurrency prices
     st.subheader("Price Chart")
     fig, ax = plt.subplots()
-    # Add your code to generate the bar chart using crypto_data
+    ax.bar(crypto_data.index, crypto_data["Close"])
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Price")
+    ax.set_title(f"{crypto_name.capitalize()} Price Chart")
+    plt.xticks(rotation=45)
     st.pyplot(fig)
 
 def main():
