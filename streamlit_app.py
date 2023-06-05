@@ -24,12 +24,15 @@ def get_crypto_data(crypto_name):
     return None
 
 def get_crypto_icon(crypto):
-    icon_url = crypto["iconUrl"]
-    response = requests.get(icon_url)
+    icon_url = get_crypto_icon_url(f"{crypto}")
+    response = requests.get(f"https://api.coinranking.com/v2/coins/{crypto_name}")
     if response.status_code == 200:
-        icon = Image.open(BytesIO(response.content))
-        return icon
+        data = response.json()
+        if data["status"] == "success":
+            crypto_icon_url = data["data"]["coin"]["iconUrl"]
+            return crypto_icon_url
     return None
+
 
 def display_sidebar():
     crypto_names = ["bitcoin", "ethereum", "litecoin"]  # Add more cryptocurrency names as needed
