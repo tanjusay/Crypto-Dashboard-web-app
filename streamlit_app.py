@@ -24,7 +24,7 @@ def get_crypto_data(crypto_name):
     return None
 
 def get_crypto_icon(crypto):
-    icon_url = get_crypto_icon_url(f"{crypto}")
+    icon_url = get_crypto_icon_url(f"{crypto_name}")
     response = requests.get(f"https://api.coinranking.com/v2/coins/{crypto_name}")
     if response.status_code == 200:
         data = response.json()
