@@ -20,18 +20,17 @@ def get_crypto_data(crypto_name):
     response = requests.get(API_ENDPOINT, headers=HEADERS, params=params)
     if response.status_code == 200:
         data = response.json()
-        if data["status"] == "success":
+        if data["status"] == "success" and data["data"]["stats"]["total"] > 0:
             return data["data"]["coins"][0]
     return None
 
 
 def get_crypto_icon(crypto):
-    response = requests.get(f"https://api.coinranking.com/v2/coins/{crypto['id']}")
+    crypto_icon_url = crypto["iconUrl"]
+    response = requests.get(crypto_icon_url)
     if response.status_code == 200:
-        data = response.json()
-        if data["status"] == "success":
-            crypto_icon_url = data["data"]["coin"]["iconUrl"]
-            return crypto_icon_url
+        image = Image.open(BytesIO(response.content))
+        return image
     return None
 
 
@@ -48,30 +47,24 @@ def display_sidebar():
 def display_main_section(crypto_name):
     crypto_data = get_crypto_data(crypto_name)
 
-    # Display cryptocurrency name and image
-    st.title(crypto_name.capitalize())
-    crypto_icon = get_crypto_icon(crypto_data)
-    if crypto_icon:
-        image_response = requests.get(crypto_icon)
-        if image_response.status_code == 200:
-            image = Image.open(BytesIO(image_response.content))
-            st.image(image, caption=crypto_name.capitalize(), use_column_width=True)
-
-    # Display bar chart of cryptocurrency prices
     if crypto_data:
+        # Display cryptocurrency name and image
+        st.title(crypto_data["name"])
+        crypto_icon = get_crypto_icon(crypto_data)
+        if crypto_icon:
+            st.image(crypto_icon, caption=crypto_data["name"], use_column_width=True)
+
+        # Display bar chart of cryptocurrency prices
         st.subheader("Price Chart")
-        history = crypto_data.get("history", [])
+        history = crypto_data["history"]
         if history:
-            dates = []
-            prices = []
-            for item in history:
-                dates.append(item["date"])
-                prices.append(item["price"])
+            dates = [item["timestamp"] for item in history]
+            prices = [item["price"] for item in history]
             fig, ax = plt.subplots()
             ax.bar(dates, prices)
             ax.set_xlabel("Date")
             ax.set_ylabel("Price")
-            ax.set_title(f"{crypto_name.capitalize()} Price Chart")
+            ax.set_title(f"{crypto_data['name']} Price Chart")
             plt.xticks(rotation=45)
             st.pyplot(fig)
 
