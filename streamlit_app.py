@@ -1,9 +1,9 @@
 import os
 import requests
 from PIL import Image
+from io import BytesIO
 import streamlit as st
 import matplotlib.pyplot as plt
-from io import BytesIO
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -23,14 +23,18 @@ def get_crypto_data(crypto_name):
             return data["data"]["coins"][0]
     return None
 
-# Function to retrieve cryptocurrency images from CoinRanking API
-def get_crypto_image(crypto):
-    image_url = crypto["iconUrl"]
-    response = requests.get(image_url)
+# Function to retrieve cryptocurrency image URL from CoinRanking API
+def get_crypto_icon_url(crypto):
+    return crypto["iconUrl"]
+
+# Function to display cryptocurrency icon
+def display_crypto_icon(crypto_name):
+    crypto_data = get_crypto_data(crypto_name)
+    icon_url = get_crypto_icon_url(crypto_data)
+    response = requests.get(icon_url)
     if response.status_code == 200:
         image = Image.open(BytesIO(response.content))
-        return image
-    return None
+        st.image(image, caption=crypto_name.capitalize(), use_column_width=True)
 
 # Function to display sidebar with cryptocurrency names
 def display_sidebar():
@@ -38,27 +42,21 @@ def display_sidebar():
 
     st.sidebar.title("Cryptocurrencies")
     selected_crypto = st.sidebar.selectbox("Select a cryptocurrency", crypto_names)
-    
+
     return selected_crypto
 
 # Function to display cryptocurrency data in main section
 def display_main_section(crypto_name):
     crypto_data = get_crypto_data(crypto_name)
 
-    # Display cryptocurrency name and image
+    # Display cryptocurrency name and icon
     st.title(crypto_name.capitalize())
-    crypto_image = get_crypto_image(crypto_data)
-    if crypto_image:
-        st.image(crypto_image, caption=crypto_name.capitalize(), use_column_width=True)
+    display_crypto_icon(crypto_name)
 
     # Display bar chart of cryptocurrency prices
     st.subheader("Price Chart")
     fig, ax = plt.subplots()
-    ax.bar(crypto_data["dates"], crypto_data["prices"])
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Price")
-    ax.set_title(f"{crypto_name.capitalize()} Price Chart")
-    plt.xticks(rotation=45)
+    # Add your code to generate the bar chart using crypto_data
     st.pyplot(fig)
 
 def main():
