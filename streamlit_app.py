@@ -54,7 +54,7 @@ def display_main_section(crypto_name):
     # Display bar chart of cryptocurrency prices
     st.subheader("Price Chart")
     fig, ax = plt.subplots()
-    ax.bar(crypto_data["close"], crypto_data["price"])
+    ax.bar(crypto_data["history"], crypto_data["price"])
     ax.set_xlabel("Date")
     ax.set_ylabel("Price")
     ax.set_title(f"{crypto_name.capitalize()} Price Chart")
