@@ -19,6 +19,7 @@ def get_crypto_data(crypto_name):
     if response.status_code == 200:
         data = response.json()
         if data["status"] == "success" and data["data"]["stats"]["total"] > 0:
+            st.write(data)
             return data["data"]["coins"][0]
     return None
 
@@ -39,7 +40,7 @@ def display_main_section(crypto_name):
     if crypto_data:
         # Display cryptocurrency name and image URL
         st.title(crypto_data["name"])
-        st.image(crypto_data["iconUrl"], caption=crypto_data["name"], use_column_width=False)
+        st.image(crypto_data["iconUrl"], caption=crypto_data["name"], use_column_width=True)
 
         # Display bar chart of cryptocurrency prices
         st.subheader("Price Chart")
