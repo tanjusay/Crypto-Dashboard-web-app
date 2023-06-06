@@ -35,8 +35,9 @@ def display_crypto_data(crypto):
     # Display sparkline chart
     st.subheader("Sparkline")
     sparkline = [float(price) for price in crypto['sparkline']]
-    plt.plot(sparkline)
-    st.pyplot()
+    fig, ax = plt.subplots()
+    ax.plot(sparkline)
+    st.pyplot(fig)
 
 def main():
     st.set_page_config(page_title="Cryptocurrency Dashboard")
@@ -50,4 +51,6 @@ def main():
         st.error("Failed to retrieve cryptocurrency data.")
 
 if __name__ == "__main__":
+    # Disable the PyplotGlobalUseWarning
+    st.set_option('deprecation.showPyplotGlobalUse', False)
     main()
